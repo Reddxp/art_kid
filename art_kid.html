@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@rt_Kid Art</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Roboto', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; position: relative; }
+    canvas#particleCanvas { position: fixed; top: 0; left: 0; z-index: 0; }
+    canvas#waveCanvas { position: fixed; bottom: 0; left: 0; width: 100%; height: 120px; z-index: 998; display: none; }
+    header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center/cover; text-align: center; position: relative; z-index: 1; }
+    header::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1; }
+    header h1 { font-family: 'Permanent Marker', cursive; font-size: 4rem; color: #8000ff; animation: glow 2s ease-in-out infinite alternate; z-index: 2; text-align: center; }
+    @keyframes glow { 0% { text-shadow: 0 0 10px #8000ff, 0 0 20px #8000ff; } 100% { text-shadow: 0 0 20px #8000ff, 0 0 40px #8000ff; } }
+    .tagline { font-size: 1.5rem; color: #ffd700; margin-top: 10px; animation: fadeIn 3s ease forwards; opacity: 0; z-index: 2; text-align: center; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; z-index: 1; position: relative; }
+    .about { text-align: center; font-size: 1.2rem; margin-bottom: 50px; animation: slideUp 1.5s ease forwards; opacity: 0; }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(50px); } }
+    .gallery { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .gallery img { width: 300px; max-width: 100%; border: 5px solid #fff; border-radius: 15px; transition: transform 0.5s, box-shadow 0.5s; }
+    .gallery img:hover { transform: scale(1.1) rotate(3deg); box-shadow: 0 0 20px #8000ff, 0 0 40px #00ffff; }
+    .contact { text-align: center; margin-top: 50px; font-size: 1.2rem; }
+    .contact a { display: inline-block; margin: 10px; padding: 10px 20px; color: #0a0a0a; background: #ffd700; border-radius: 10px; text-decoration: none; transition: transform 0.3s, background 0.3s; }
+    .contact a:hover { transform: scale(1.1); background: #ff69b4; }
+    .player { position: fixed; bottom: 140px; right: 20px; background: linear-gradient(135deg, #8000ff, #00ffff); padding: 15px 25px; border-radius: 20px; z-index: 999; text-align: center; box-shadow: 0 0 20px #8000ff, 0 0 40px #00ffff; transition: transform 0.3s, box-shadow 0.3s; }
+    .player:hover { transform: scale(1.05); box-shadow: 0 0 30px #8000ff, 0 0 60px #00ffff; }
+    audio { width: 200px; outline: none; border-radius: 10px; }
+    footer { text-align: center; padding: 20px; background: #111; font-size: 0.9rem; }
+    @media (max-width: 768px) {
+        header h1 { font-size: 3rem; }
+        .tagline { font-size: 1.2rem; }
+        .gallery { flex-direction: column; align-items: center; }
+        .gallery img { width: 90%; }
+        audio { width: 150px; }
+        .player { bottom: 130px; right: 10px; padding: 12px 20px; }
+        canvas#waveCanvas { height: 80px; }
+    }
+</style>
+</head>
+<body>
+<canvas id="particleCanvas"></canvas>
+<canvas id="waveCanvas"></canvas>
+<header>
+    <h1>@rt_Kid</h1>
+    <div class="tagline">Where art comes alive</div>
+</header>
+<section class="about">
+    <p>@rt_Kid is all about bold colors, urban vibes, and digital creativity. Bringing walls and screens to life, one stroke at a time.</p>
+</section>
+<section class="gallery">
+    <img src="/mnt/data/A_digital_illustration_logo_features_\"@rt_Kid\"_as_.png" alt="Brushstroke Logo">
+    <img src="/mnt/data/A_digital_logo_design_for_the_handle_\"@rt_Kid\"_is_.png" alt="Futuristic Logo">
+    <img src="/mnt/data/A_graffiti-style_street_art_mural_of_\"@rt_Kid\"_is_.png" alt="Graffiti Logo">
+</section>
+<div class="player">
+    <h2 style="color:#fff; margin-bottom:10px; font-size:1rem;">Listen to the Vibe</h2>
+    <audio id="musicPlayer" controls preload="none" aria-label="Background music player">
+        <source src="Lewis Capaldi - Someone You Loved (Lyrics)(MP3_160K).mp3" type="audio/mpeg">
+        <source src="Lewis Capaldi - Someone You Loved (Lyrics)(MP3_160K).mp3" type="audio/ogg">
+        Your browser does not support the audio element. <a href="someone-you-loved.mp3">Download the audio</a>
+    </audio>
+</div>
+<section class="contact">
+    <h2>Contact</h2>
+    <a href="https://instagram.com">Instagram</a>
+    <a href="https://tiktok.com">TikTok</a>
+    <a href="https://wa.me/">WhatsApp</a>
+</section>
+<footer>
+    &copy; 2025 @rt_Kid Art. All Rights Reserved.
+</footer>
+<script>
+// Particle background
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+class Particle { constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 3 + 1; this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * 1 - 0.5; this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; } update() { this.x += this.speedX; this.y += this.speedY; if(this.x < 0 || this.x > canvas.width) this.speedX *= -1; if(this.y < 0 || this.y > canvas.height) this.speedY *= -1; } draw() { ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
+const particlesArray = [];
+for(let i=0; i<150; i++) { particlesArray.push(new Particle()); }
+function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particlesArray.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+animate();
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+// Ocean wave audio visualizer
+const waveCanvas = document.getElementById('waveCanvas');
+const waveCtx = waveCanvas.getContext('2d');
+waveCanvas.width = window.innerWidth;
+waveCanvas.height = 120;
+const audio = document.getElementById('musicPlayer');
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const source = audioCtx.createMediaElementSource(audio);
+const analyser = audioCtx.createAnalyser();
+source.connect(analyser);
+analyser.connect(audioCtx.destination);
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+function drawWave() {
+    requestAnimationFrame(drawWave);
+    waveCtx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
+    analyser.getByteFrequencyData(dataArray);
+    waveCtx.beginPath();
+    waveCtx.moveTo(0,waveCanvas.height/2);
+    for(let i=0; i < bufferLength; i++) {
+        const x = (i / bufferLength) * waveCanvas.width;
+        const y = waveCanvas.height/2 + dataArray[i]/2;
+        waveCtx.lineTo(x, y);
+    }
+    waveCtx.lineTo(waveCanvas.width, waveCanvas.height/2);
+    waveCtx.strokeStyle = 'linear-gradient(to right, #8000ff, #00ffff)';
+    waveCtx.strokeStyle = '#8000ff';
+    waveCtx.lineWidth = 3;
+    waveCtx.stroke();
+}
+
+audio.addEventListener('play', () => {
+    waveCanvas.style.display = 'block';
+    audioCtx.resume();
+    drawWave();
+});
+
+audio.addEventListener('pause', () => {
+    waveCanvas.style.display = 'none';
+});
+
+audio.addEventListener('error', (e) => {
+    console.error('Audio loading error:', e);
+    const errorMsg = document.createElement('p');
+    errorMsg.textContent = 'Sorry, the audio could not be loaded.';
+    errorMsg.style.color = 'red';
+    errorMsg.style.fontSize = '0.8rem';
+    document.querySelector('.player').appendChild(errorMsg);
+});
+
+window.addEventListener('resize', () => { waveCanvas.width = window.innerWidth; waveCanvas.height = 120; });
+</script>
+</body>
+</html>
